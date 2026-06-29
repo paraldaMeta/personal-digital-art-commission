@@ -148,6 +148,9 @@ function styleBlock(){
 .art-page *{box-sizing:border-box}
 .art-image{background:#311365}
 .art-image img{display:block;width:100%;height:auto}
+.art-top-visual{height:clamp(440px,64vh,780px);overflow:hidden}
+.art-top-visual img{height:100%;object-fit:cover;object-position:center 30%}
+.art-bottom-visual img{height:auto}
 .art-wrap{max-width:1180px;margin:0 auto}
 .art-nav{display:flex;align-items:center;justify-content:center;gap:32px;height:46px;background:#eee6ef;color:#625370;font-size:13px;letter-spacing:.1em}
 .art-nav b{color:#7a2bc5}.art-nav a{color:#625370;text-decoration:none}
@@ -182,7 +185,7 @@ function styleBlock(){
 .art-generator{max-width:1180px;margin:0 auto;padding:22px}.art-gen-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.art-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.art-field{display:grid;gap:7px}.art-field label{font-size:12px;color:var(--gold)}.art-field input,.art-field select{width:100%;border:1px solid var(--line);border-radius:8px;background:#19182b;color:#f8edff;padding:11px 12px;font:inherit}
 .art-field.wide{grid-column:1/-1}.art-gen-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.art-output{min-height:360px;border:1px dashed rgba(241,194,90,.35);border-radius:8px;background:#141326;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#aa9bb8;text-align:center;padding:18px}.art-output img{display:block;width:100%;height:auto;border-radius:6px}.art-status{margin-top:12px;color:#cbbbd8;font-size:13px;line-height:1.6}
 .art-proof{max-width:1180px;margin:22px auto 0;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px}.art-proof b{font-size:26px}.art-proof small{color:var(--muted);font-size:14px;line-height:1.8}.art-proof .heart{color:#ff5974;font-size:34px;margin-right:8px}
-@media(max-width:840px){.art-nav{gap:12px;overflow:auto;justify-content:flex-start;padding:0 14px}.art-card-grid,.art-price-grid,.art-mini-grid,.art-config,.art-options,.art-gen-grid,.art-fields{grid-template-columns:1fr}.art-section{padding:32px 15px}.art-hero{padding:44px 16px 50px}.art-total,.art-proof{align-items:flex-start;flex-direction:column}.art-field.wide{grid-column:auto}.art-shell-top{position:static!important}.art-shell-spacer{display:none!important}}
+@media(max-width:840px){.art-nav{gap:12px;overflow:auto;justify-content:flex-start;padding:0 14px}.art-top-visual{height:clamp(360px,62vh,560px)}.art-card-grid,.art-price-grid,.art-mini-grid,.art-config,.art-options,.art-gen-grid,.art-fields{grid-template-columns:1fr}.art-section{padding:32px 15px}.art-hero{padding:44px 16px 50px}.art-total,.art-proof{align-items:flex-start;flex-direction:column}.art-field.wide{grid-column:auto}.art-shell-top{position:static!important}.art-shell-spacer{display:none!important}}
   </style>`;
 }
 
@@ -253,7 +256,7 @@ function generatorBlock(st){
 
 function shell(st){
   return styleBlock() + `<div class="art-page">
-    <div class="art-image"><img src="${ASSETS.hero}" alt="专属数字艺术创作顶部视觉"></div>
+    <div class="art-image art-top-visual"><img src="${ASSETS.hero}" alt="专属数字艺术创作顶部视觉"></div>
     <nav class="art-nav"><b>专属数字艺术</b><a href="#art-rules">设计规范</a><a href="#art-config">定制套餐</a><a href="#art-generate">生成图片</a><a href="#art-notes">重要须知</a></nav>
     <section class="art-hero">
       <h1>专属数字艺术创作</h1>
@@ -286,7 +289,7 @@ function shell(st){
       </div>
       <div class="art-proof"><div><b>安心事业</b><br><small>每一张都按你的用途整理创作 brief，减少反复沟通成本。</small></div><div><span class="heart">♥</span><b>10,000+</b><br><small>灵感收藏与案例参考</small></div></div>
     </section>
-    <div class="art-image"><img src="${ASSETS.footer}" alt="专属数字艺术创作底部视觉"></div>
+    <div class="art-image art-bottom-visual"><img src="${ASSETS.footer}" alt="专属数字艺术创作底部视觉"></div>
   </div>`;
 }
 
