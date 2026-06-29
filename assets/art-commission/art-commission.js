@@ -144,6 +144,8 @@ function imagePromptFor(st){
 
 function styleBlock(){
   return `<style>
+html{scroll-behavior:smooth;scroll-padding-top:42px;scroll-snap-type:y proximity}
+[data-art-snap]{scroll-snap-align:start;scroll-snap-stop:always}
 .art-page{--bg:#111120;--panel:#202033;--panel2:#292741;--panel3:#17172a;--violet:#6e18b2;--violet2:#8a22d6;--gold:#f1c25a;--gold2:#c08222;--ink:#fff8ff;--muted:#c2b3cf;--line:rgba(255,255,255,.11);font-family:"Noto Serif SC","Songti SC","SimSun",serif;color:var(--ink);background:var(--bg);overflow:hidden}
 .art-page *{box-sizing:border-box}
 .art-image{background:#311365}
@@ -185,7 +187,8 @@ function styleBlock(){
 .art-generator{max-width:1180px;margin:0 auto;padding:22px}.art-gen-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.art-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.art-field{display:grid;gap:7px}.art-field label{font-size:12px;color:var(--gold)}.art-field input,.art-field select{width:100%;border:1px solid var(--line);border-radius:8px;background:#19182b;color:#f8edff;padding:11px 12px;font:inherit}
 .art-field.wide{grid-column:1/-1}.art-gen-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.art-output{min-height:360px;border:1px dashed rgba(241,194,90,.35);border-radius:8px;background:#141326;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#aa9bb8;text-align:center;padding:18px}.art-output img{display:block;width:100%;height:auto;border-radius:6px}.art-status{margin-top:12px;color:#cbbbd8;font-size:13px;line-height:1.6}
 .art-proof{max-width:1180px;margin:22px auto 0;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px}.art-proof b{font-size:26px}.art-proof small{color:var(--muted);font-size:14px;line-height:1.8}.art-proof .heart{color:#ff5974;font-size:34px;margin-right:8px}
-@media(max-width:840px){.art-nav{gap:12px;overflow:auto;justify-content:flex-start;padding:0 14px}.art-top-visual{height:clamp(360px,62vh,560px)}.art-card-grid,.art-price-grid,.art-mini-grid,.art-config,.art-options,.art-gen-grid,.art-fields{grid-template-columns:1fr}.art-section{padding:32px 15px}.art-hero{padding:44px 16px 50px}.art-total,.art-proof{align-items:flex-start;flex-direction:column}.art-field.wide{grid-column:auto}.art-shell-top{position:static!important}.art-shell-spacer{display:none!important}}
+@media(max-width:840px){html{scroll-padding-top:0;scroll-snap-type:y proximity}.art-nav{gap:12px;overflow:auto;justify-content:flex-start;padding:0 14px}.art-top-visual{height:clamp(360px,62vh,560px)}.art-card-grid,.art-price-grid,.art-mini-grid,.art-config,.art-options,.art-gen-grid,.art-fields{grid-template-columns:1fr}.art-section{padding:32px 15px}.art-hero{padding:44px 16px 50px}.art-total,.art-proof{align-items:flex-start;flex-direction:column}.art-field.wide{grid-column:auto}.art-shell-top{position:static!important}.art-shell-spacer{display:none!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;scroll-snap-type:none}[data-art-snap]{scroll-snap-align:none}}
   </style>`;
 }
 
@@ -213,7 +216,7 @@ function optionButtons(name, st){
 function generatorBlock(st){
   const prompt = imagePromptFor(st);
   const gen = Object.assign({}, DEFAULT_GEN, root.ART_GEN_SETTINGS || {});
-  return `<section class="art-section" id="art-generate">
+  return `<section class="art-section" id="art-generate" data-art-snap>
     <h2>生成图片</h2>
     <div class="art-generator">
       <div class="art-gen-grid">
@@ -256,14 +259,14 @@ function generatorBlock(st){
 
 function shell(st){
   return styleBlock() + `<div class="art-page">
-    <div class="art-image art-top-visual"><img src="${ASSETS.hero}" alt="专属数字艺术创作顶部视觉"></div>
+    <div class="art-image art-top-visual" data-art-snap><img src="${ASSETS.hero}" alt="专属数字艺术创作顶部视觉"></div>
     <nav class="art-nav"><b>专属数字艺术</b><a href="#art-rules">设计规范</a><a href="#art-config">定制套餐</a><a href="#art-generate">生成图片</a><a href="#art-notes">重要须知</a></nav>
-    <section class="art-hero">
+    <section class="art-hero" data-art-snap>
       <h1>专属数字艺术创作</h1>
       <p>用东方神性、紫金光感与个人气质，定制一张可用于头像、礼物、品牌与空间陈设的数字艺术作品。</p>
       <button type="button" class="art-cta" data-art-scroll="#art-config">开始配置</button>
     </section>
-    <section class="art-section" id="art-rules">
+    <section class="art-section" id="art-rules" data-art-snap>
       <h2>设计规范（必读）</h2>
       <div class="art-card-grid">
         <article class="art-info-card"><i>光</i><h3>沟通与气质</h3><p>先确认人物状态、用途、禁忌与参考方向，再进入构图。可提供照片，但不会泄露隐私。</p></article>
@@ -271,7 +274,7 @@ function shell(st){
         <article class="art-info-card"><i>人</i><h3>人物比例</h3><p>默认东方幻想审美，可偏仙侠、神祇、梦境或品牌主视觉；复杂需求需先确认。</p></article>
       </div>
     </section>
-    <section class="art-section" id="art-config">
+    <section class="art-section" id="art-config" data-art-snap>
       <h2>套餐与配置</h2>
       ${packageCards(st)}
       <div class="art-config">
@@ -280,7 +283,7 @@ function shell(st){
       </div>
     </section>
     ${generatorBlock(st)}
-    <section class="art-section" id="art-notes">
+    <section class="art-section" id="art-notes" data-art-snap>
       <h2>重要须知</h2>
       <div class="art-mini-grid">
         <article class="art-mini-card"><i>一</i><h3>第一稿</h3><p>第一稿用于确认方向，重点看整体气质、构图和配色。</p></article>
@@ -289,7 +292,7 @@ function shell(st){
       </div>
       <div class="art-proof"><div><b>安心事业</b><br><small>每一张都按你的用途整理创作 brief，减少反复沟通成本。</small></div><div><span class="heart">♥</span><b>10,000+</b><br><small>灵感收藏与案例参考</small></div></div>
     </section>
-    <div class="art-image art-bottom-visual"><img src="${ASSETS.footer}" alt="专属数字艺术创作底部视觉"></div>
+    <div class="art-image art-bottom-visual" data-art-snap><img src="${ASSETS.footer}" alt="专属数字艺术创作底部视觉"></div>
   </div>`;
 }
 
@@ -392,6 +395,61 @@ async function generateImage(){
   }
 }
 
+function snapOffset(){
+  const shell = root.document && root.document.querySelector(".art-shell-top");
+  if(!shell) return 0;
+  const fixed = root.getComputedStyle(shell).position === "fixed";
+  return fixed ? Math.round(shell.getBoundingClientRect().height) : 0;
+}
+
+function snapTop(el){
+  return Math.max(0, Math.round(root.scrollY + el.getBoundingClientRect().top - snapOffset()));
+}
+
+function snapPoints(){
+  return Array.from(root.document.querySelectorAll("[data-art-snap]"));
+}
+
+function scrollToSnap(el){
+  root.scrollTo({top: snapTop(el), behavior: "smooth"});
+}
+
+function nextSnap(dir){
+  const points = snapPoints();
+  if(!points.length) return null;
+  const y = root.scrollY + snapOffset();
+  if(dir > 0){
+    return points.find(el => snapTop(el) > root.scrollY + 48) || points[points.length - 1];
+  }
+  for(let i = points.length - 1; i >= 0; i--){
+    if(snapTop(points[i]) < y - 48) return points[i];
+  }
+  return points[0];
+}
+
+function isSnapInteractive(target){
+  return !!(target && target.closest && target.closest("input,select,textarea,button,.art-output,.art-prompt"));
+}
+
+function bindSnapScroll(){
+  if(root.ART_SNAP_BOUND || root.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  root.ART_SNAP_BOUND = true;
+  let lockedUntil = 0;
+  root.addEventListener("wheel", e => {
+    if(isSnapInteractive(e.target) || e.ctrlKey || Math.abs(e.deltaY) < 18) return;
+    const now = Date.now();
+    if(now < lockedUntil){
+      e.preventDefault();
+      return;
+    }
+    const target = nextSnap(e.deltaY > 0 ? 1 : -1);
+    if(!target) return;
+    e.preventDefault();
+    lockedUntil = now + 720;
+    scrollToSnap(target);
+  }, {passive: false});
+}
+
 function bind(){
   const doc = root.document;
   doc.querySelectorAll("[data-art-opt]").forEach(btn => {
@@ -403,7 +461,7 @@ function bind(){
   doc.querySelectorAll("[data-art-scroll]").forEach(btn => {
     btn.addEventListener("click", () => {
       const el = doc.querySelector(btn.dataset.artScroll);
-      if(el) el.scrollIntoView({behavior: "smooth"});
+      if(el) scrollToSnap(el);
     });
   });
   const generate = doc.getElementById("art-generate-btn");
@@ -414,6 +472,7 @@ function bind(){
     const el = doc.getElementById(id);
     if(el) el.addEventListener("change", saveGenSettings);
   });
+  bindSnapScroll();
 }
 
 function renderStandalone(container){
