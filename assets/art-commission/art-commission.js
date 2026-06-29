@@ -118,7 +118,7 @@ function briefFor(st){
     `风格：${optionLabel("style", st.style)}，主色：${optionLabel("palette", st.palette)}`,
     `主体：${optionLabel("subject", st.subject)}，用途：${optionLabel("use", st.use)}`,
     `交付：${optionLabel("delivery", st.delivery)}；附加：${optionLabel("addon", st.addon)}`,
-    "画面关键词：东方神性、紫金、长发、莲花、星尘、云气、柔光、精修数字绘画",
+    "画面关键词：旧绢佛画、敦煌壁画、矿物颜料、棕褐底色、象牙白人物、细线描、圆光、佛像或护法暗线稿、安静仪式感",
     "制作要求：先确认人物气质、用途和禁忌，再出构图方向；不能臆造客户未提供的肖像细节。"
   ].join("\n");
 }
@@ -133,11 +133,13 @@ function imagePromptFor(st){
     c.pack.key === "body" ? "full body sacred figure composition" :
     "full character and environment poster composition";
   return [
-    "Create a refined vertical digital artwork for a personal art commission.",
-    `Theme: ${style}; subject: ${subject}; usage: ${use}; color palette: ${palette}.`,
-    `Composition: ${detail}, eastern fantasy divinity, elegant white long hair, violet and gold robe, lotus flowers, moon halo, soft cloud ribbons, stardust, subtle sacred ornaments, luminous but restrained atmosphere.`,
-    "Style: high-end Chinese fantasy illustration, delicate textile texture, polished digital painting, cinematic lighting, premium portrait design, clean background hierarchy.",
-    "Avoid: text, watermark, logo, low resolution, deformed hands, extra fingers, distorted face, overexposed neon, cheap game poster style.",
+    "Create a refined vertical East Asian mythic artwork on aged silk or linen canvas texture.",
+    `Commission settings: ${style}; subject: ${subject}; usage: ${use}; selected palette label: ${palette}.`,
+    `Composition: ${detail}; quiet foreground figure in ivory white or pale mineral color, serene closed or half-closed eyes, long flowing hair, elegant thin ink contour lines, restrained hand gesture, poetic negative space.`,
+    "Core visual language: Dunhuang mural texture, Song/Yuan Buddhist painting, old silk scroll painting, Japanese bijin-ga elegance, mineral pigment, muted sepia brown, antique gold, warm umber, ivory white, very subtle blue-green accents only.",
+    "Background: faded Buddhist mural wall, faint halo circle, Guanyin/Buddha/guardian deity as low-contrast line drawing, temple-wall atmosphere, woven fabric grain, antique patina, soft flat lighting, no glossy highlights.",
+    "Mood: still, devotional, quiet, collected, sacred but understated; collectible art print rather than modern fantasy poster.",
+    "Avoid: neon purple, shiny violet-gold fantasy, glossy digital art, cyberpunk, 3D render, photorealism, western fantasy armor, game character design, excessive sparkles, modern fashion, text, watermark, logo, harsh contrast, plastic skin, over-detailed background, cheap poster look.",
     `Client brief: ${briefFor(st).replace(/\n/g, "; ")}`
   ].join("\n");
 }
