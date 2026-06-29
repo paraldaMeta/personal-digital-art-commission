@@ -69,6 +69,28 @@ const OPTION_SETS = {
   ]
 };
 
+const MYTH_SYSTEMS = [
+  {key: "guanyin", label: "观音", icon: "ॐ", prompt: "faint Guanyin / Avalokitesvara mural line drawing in the background, compassionate stillness, halo circle"},
+  {key: "buddha", label: "佛像", icon: "ॐ", prompt: "ancient Buddha mural figure behind the subject, quiet hand mudra, low-contrast gold-brown line art"},
+  {key: "guangong", label: "关公", icon: "ॐ", prompt: "subtle Guan Gong guardian presence, solemn loyal protector energy, antique temple mural treatment"},
+  {key: "xuannv", label: "九天玄女", icon: "ॐ", prompt: "Nine Heavens Xuannv-inspired sacred feminine presence, old silk painting restraint, celestial but understated"},
+  {key: "taishang", label: "太上老君", icon: "ॐ", prompt: "Taishang Laojun-inspired Daoist sage line drawing, ancient scroll atmosphere, quiet numinous wisdom"},
+  {key: "caishen", label: "财神", icon: "ॐ", prompt: "subtle Caishen wealth deity motif, antique gold mineral pigment, auspicious but not flashy"}
+];
+
+const SPIRIT_ANIMALS = [
+  {key: "dragon", label: "龙", icon: "♞", prompt: "a restrained Chinese dragon motif in faded mural lines, cloud coils, antique mineral pigment"},
+  {key: "zhuque", label: "朱雀", icon: "羽", prompt: "Vermilion Bird / Zhuque feather motif, elegant wing lines, muted cinnabar accent"},
+  {key: "fox", label: "狐狸", icon: "爪", prompt: "white fox spirit companion, quiet gaze, delicate fur linework"},
+  {key: "wolf", label: "狼", icon: "爪", prompt: "wolf guardian silhouette, solemn protective energy, low-contrast ink lines"},
+  {key: "qilin", label: "麒麟", icon: "♞", prompt: "qilin auspicious beast, deer-dragon silhouette, antique gold line drawing"},
+  {key: "pixiu", label: "貔貅", icon: "♞", prompt: "pixiu guardian beast, compact protective form, old temple carving feel"},
+  {key: "phoenix", label: "凤凰", icon: "羽", prompt: "phoenix feather train, flowing line rhythm, mineral blue-green accents"},
+  {key: "snake", label: "蛇", icon: "♞", prompt: "serpent spirit motif, elegant coil, quiet ritual symbolism"},
+  {key: "tiger", label: "老虎", icon: "爪", prompt: "tiger guardian presence, soft but powerful stripes, antique mural style"},
+  {key: "peacock", label: "孔雀", icon: "羽", prompt: "ivory white peacock with long feather train, turquoise eye spots, delicate filaments"}
+];
+
 const ADDON_PRICE = {none: 0, rush: 66, commercial: 188, source: 128};
 const DEFAULT_GEN = {
   baseUrl: "https://api.openai.com/v1",
@@ -91,7 +113,11 @@ function stateFrom(opt){
     use: opt.use || "poster",
     palette: opt.palette || "violet",
     delivery: opt.delivery || "digital",
-    addon: opt.addon || "none"
+    addon: opt.addon || "none",
+    myth: opt.myth || "guanyin",
+    animal: opt.animal || "dragon",
+    customRequest: opt.customRequest || "",
+    referenceName: opt.referenceName || ""
   };
 }
 
@@ -102,6 +128,14 @@ function optionLabel(name, key){
 
 function packageByKey(key){
   return PACKAGES.find(p => p.key === key) || PACKAGES[1];
+}
+
+function mythByKey(key){
+  return MYTH_SYSTEMS.find(x => x.key === key) || MYTH_SYSTEMS[0];
+}
+
+function animalByKey(key){
+  return SPIRIT_ANIMALS.find(x => x.key === key) || SPIRIT_ANIMALS[0];
 }
 
 function calc(st){
@@ -117,8 +151,11 @@ function briefFor(st){
     `预算：¥${c.total}`,
     `风格：${optionLabel("style", st.style)}，主色：${optionLabel("palette", st.palette)}`,
     `主体：${optionLabel("subject", st.subject)}，用途：${optionLabel("use", st.use)}`,
+    `神话体系：${mythByKey(st.myth).label}；灵兽体系：${animalByKey(st.animal).label}`,
     `交付：${optionLabel("delivery", st.delivery)}；附加：${optionLabel("addon", st.addon)}`,
     "画面关键词：旧绢佛画、敦煌壁画、矿物颜料、棕褐底色、象牙白人物、细线描、圆光、佛像或护法暗线稿、安静仪式感",
+    st.referenceName ? `参考图片：${st.referenceName}` : "参考图片：未上传",
+    st.customRequest ? `个性化需求：${st.customRequest}` : "个性化需求：待补充",
     "制作要求：先确认人物气质、用途和禁忌，再出构图方向；不能臆造客户未提供的肖像细节。"
   ].join("\n");
 }
@@ -129,6 +166,10 @@ function imagePromptFor(st){
   const subject = optionLabel("subject", st.subject);
   const use = optionLabel("use", st.use);
   const palette = optionLabel("palette", st.palette);
+  const myth = mythByKey(st.myth);
+  const animal = animalByKey(st.animal);
+  const custom = st.customRequest ? `Client custom requirement: ${st.customRequest}.` : "Client custom requirement: not provided; do not invent personal details.";
+  const reference = st.referenceName ? `A reference image named ${st.referenceName} was supplied by the client; treat it as private visual reference if available to the generation workflow.` : "No reference image is attached; avoid inventing exact likeness.";
   const detail = c.pack.key === "small" ? "upper body portrait composition" :
     c.pack.key === "body" ? "full body sacred figure composition" :
     "full character and environment poster composition";
@@ -136,6 +177,9 @@ function imagePromptFor(st){
     "Create a refined vertical East Asian mythic artwork on aged silk or linen canvas texture.",
     `Commission settings: ${style}; subject: ${subject}; usage: ${use}; selected palette label: ${palette}.`,
     `Composition: ${detail}; quiet foreground figure in ivory white or pale mineral color, serene closed or half-closed eyes, long flowing hair, elegant thin ink contour lines, restrained hand gesture, poetic negative space.`,
+    `Selected myth system: ${myth.label}; ${myth.prompt}.`,
+    `Selected spirit animal: ${animal.label}; ${animal.prompt}.`,
+    `${custom} ${reference}`,
     "Core visual language: Dunhuang mural texture, Song/Yuan Buddhist painting, old silk scroll painting, Japanese bijin-ga elegance, mineral pigment, muted sepia brown, antique gold, warm umber, ivory white, very subtle blue-green accents only.",
     "Background: faded Buddhist mural wall, faint halo circle, Guanyin/Buddha/guardian deity as low-contrast line drawing, temple-wall atmosphere, woven fabric grain, antique patina, soft flat lighting, no glossy highlights.",
     "Mood: still, devotional, quiet, collected, sacred but understated; collectible art print rather than modern fantasy poster.",
@@ -185,10 +229,27 @@ html{scroll-behavior:smooth;scroll-padding-top:42px;scroll-snap-type:y proximity
 .art-config{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1180px;margin:22px auto 0}
 .art-options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.art-option{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:8px;padding:13px}.art-option-title{font-size:13px;color:var(--gold);margin-bottom:9px}.art-pills{display:flex;flex-wrap:wrap;gap:8px}
 .art-pill{border:1px solid rgba(255,255,255,.15);background:#1b1a2d;color:#eee3f7;border-radius:999px;padding:8px 11px;font-size:13px;cursor:pointer}.art-pill.on{background:linear-gradient(90deg,#6d27df,#a836ff);border-color:transparent;color:#fff}
+.art-system-panel{max-width:1180px;margin:22px auto 0;display:grid;grid-template-columns:1fr 1.5fr .95fr;gap:28px;padding:22px 0 8px}
+.art-system-title{display:flex;align-items:center;gap:11px;margin:0 0 18px;color:#fff;font-size:22px;font-weight:800;letter-spacing:.05em}
+.art-system-title i{display:inline-flex;align-items:center;justify-content:center;color:var(--gold);font-style:normal;font-size:24px;line-height:1}
+.art-tile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.art-system-tile{min-height:108px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:linear-gradient(180deg,#302e49,#25243d);color:#f5effb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 28px rgba(0,0,0,.18);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.art-system-tile:hover,.art-system-tile.on{transform:translateY(-2px);border-color:rgba(241,194,90,.75);box-shadow:0 0 0 1px rgba(241,194,90,.22),0 0 26px rgba(241,194,90,.24),inset 0 1px 0 rgba(255,255,255,.08)}
+.art-system-tile .art-tile-icon{height:32px;color:var(--gold);font-size:31px;font-weight:800;line-height:1}
+.art-system-tile .art-tile-label{font-size:17px;font-weight:800}
+.art-custom-card{height:100%;border:1px solid rgba(255,255,255,.1);border-radius:8px;background:linear-gradient(180deg,#292741,#202033);padding:28px 26px;box-shadow:0 18px 42px rgba(0,0,0,.18)}
+.art-custom-card p{margin:0 0 22px;color:#f1ebf9;font-size:17px;font-weight:800;line-height:1.7}
+.art-upload{position:relative;display:flex;min-height:150px;border:2px dashed rgba(138,85,236,.48);border-radius:8px;align-items:center;justify-content:center;text-align:center;background:#24233c;color:#d9ccef;cursor:pointer;margin-bottom:22px;overflow:hidden}
+.art-upload input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.art-upload strong{display:block;color:#f0e5ff;font-size:16px;margin-top:8px}.art-upload small{display:block;color:#9f91b5;margin-top:8px}.art-upload i{display:block;color:var(--gold);font-style:normal;font-size:32px}
+.art-custom-text{width:100%;min-height:145px;resize:vertical;border:1px solid rgba(255,255,255,.08);border-radius:7px;background:#141326;color:#f8edff;padding:16px;font:inherit;font-size:16px;line-height:1.55;margin-bottom:22px}
+.art-submit-custom{width:100%;border:0;border-radius:999px;background:linear-gradient(90deg,#7b2de8,#b642ff);color:#fff;font-weight:900;font-size:17px;padding:15px 18px;cursor:pointer;box-shadow:0 12px 28px rgba(142,54,243,.32)}
+.art-custom-status{min-height:22px;color:#d9ccef;font-size:13px;line-height:1.6;margin-top:12px}
 .art-brief{padding:20px}.art-brief pre,.art-prompt{white-space:pre-wrap;margin:0;color:#efe3f7;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.7}
 .art-generator{max-width:1180px;margin:0 auto;padding:22px}.art-gen-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.art-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.art-field{display:grid;gap:7px}.art-field label{font-size:12px;color:var(--gold)}.art-field input,.art-field select{width:100%;border:1px solid var(--line);border-radius:8px;background:#19182b;color:#f8edff;padding:11px 12px;font:inherit}
 .art-field.wide{grid-column:1/-1}.art-gen-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.art-output{min-height:360px;border:1px dashed rgba(241,194,90,.35);border-radius:8px;background:#141326;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#aa9bb8;text-align:center;padding:18px}.art-output img{display:block;width:100%;height:auto;border-radius:6px}.art-status{margin-top:12px;color:#cbbbd8;font-size:13px;line-height:1.6}
 .art-proof{max-width:1180px;margin:22px auto 0;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:18px}.art-proof b{font-size:26px}.art-proof small{color:var(--muted);font-size:14px;line-height:1.8}.art-proof .heart{color:#ff5974;font-size:34px;margin-right:8px}
+@media(max-width:960px){.art-system-panel{grid-template-columns:1fr;gap:24px}.art-system-title{font-size:20px}.art-system-tile{min-height:96px}}
 @media(max-width:840px){html{scroll-padding-top:0;scroll-snap-type:y proximity}.art-nav{gap:12px;overflow:auto;justify-content:flex-start;padding:0 14px}.art-top-visual{height:clamp(360px,62vh,560px)}.art-card-grid,.art-price-grid,.art-mini-grid,.art-config,.art-options,.art-gen-grid,.art-fields{grid-template-columns:1fr}.art-section{padding:32px 15px}.art-hero{padding:44px 16px 50px}.art-total,.art-proof{align-items:flex-start;flex-direction:column}.art-field.wide{grid-column:auto}.art-shell-top{position:static!important}.art-shell-spacer{display:none!important}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;scroll-snap-type:none}[data-art-snap]{scroll-snap-align:none}}
   </style>`;
@@ -213,6 +274,40 @@ function optionButtons(name, st){
     OPTION_SETS[name].map(([key, label]) =>
       `<button type="button" class="art-pill${st[name] === key ? " on" : ""}" data-art-opt="${name}" data-art-value="${key}">${esc(label)}</button>`
     ).join("") + `</div></div>`;
+}
+
+function systemTiles(title, icon, items, stateKey, current){
+  return `<div class="art-system-group">
+    <h3 class="art-system-title"><i>${esc(icon)}</i><span>${esc(title)}</span></h3>
+    <div class="art-tile-grid">
+      ${items.map(item => `<button type="button" class="art-system-tile${current === item.key ? " on" : ""}" data-art-opt="${stateKey}" data-art-value="${item.key}" aria-pressed="${current === item.key ? "true" : "false"}">
+        <span class="art-tile-icon">${esc(item.icon)}</span>
+        <span class="art-tile-label">${esc(item.label)}</span>
+      </button>`).join("")}
+    </div>
+  </div>`;
+}
+
+function customPanel(st){
+  return `<div class="art-custom-card">
+    <h3 class="art-system-title"><i>♥</i><span>个性化定制</span></h3>
+    <p>欢迎提供您自家小动物的清晰照片，或您供奉仙家的相关信息，我们将据此进行专属设计。</p>
+    <label class="art-upload" for="art-reference-file">
+      <input id="art-reference-file" type="file" accept="image/jpeg,image/png,image/webp">
+      <span><i>☁</i><strong>${st.referenceName ? esc(st.referenceName) : "上传您的参考图片"}</strong><small>支持 JPG、PNG 格式</small></span>
+    </label>
+    <textarea class="art-custom-text" id="art-custom-request" placeholder="请描述您的个性化需求...">${esc(st.customRequest)}</textarea>
+    <button type="button" class="art-submit-custom" id="art-submit-custom">提交定制需求</button>
+    <div class="art-custom-status" id="art-custom-status">${st.customRequest || st.referenceName ? "已写入当前创作 brief 与出图提示词。" : ""}</div>
+  </div>`;
+}
+
+function systemPicker(st){
+  return `<div class="art-system-panel" id="art-systems" data-art-snap>
+    ${systemTiles("神话体系", "◆", MYTH_SYSTEMS, "myth", st.myth)}
+    ${systemTiles("灵兽体系", "♞", SPIRIT_ANIMALS, "animal", st.animal)}
+    ${customPanel(st)}
+  </div>`;
 }
 
 function generatorBlock(st){
@@ -279,6 +374,7 @@ function shell(st){
     <section class="art-section" id="art-config" data-art-snap>
       <h2>套餐与配置</h2>
       ${packageCards(st)}
+      ${systemPicker(st)}
       <div class="art-config">
         <div class="art-options">${["style","subject","use","palette","delivery","addon"].map(k => optionButtons(k, st)).join("")}</div>
         <div class="art-brief"><pre>${esc(briefFor(st))}</pre></div>
@@ -452,6 +548,39 @@ function bindSnapScroll(){
   }, {passive: false});
 }
 
+function refreshCreativeText(){
+  const st = stateFrom(root.ART_STATE);
+  const brief = root.document.querySelector(".art-brief pre");
+  const prompt = root.document.getElementById("art-prompt");
+  if(brief) brief.textContent = briefFor(st);
+  if(prompt) prompt.textContent = imagePromptFor(st);
+}
+
+function bindCustomPanel(){
+  const doc = root.document;
+  const file = doc.getElementById("art-reference-file");
+  const text = doc.getElementById("art-custom-request");
+  const submit = doc.getElementById("art-submit-custom");
+  const status = doc.getElementById("art-custom-status");
+  if(file) file.addEventListener("change", () => {
+    const picked = file.files && file.files[0];
+    root.ART_STATE = Object.assign(stateFrom(root.ART_STATE), {referenceName: picked ? picked.name : ""});
+    const label = doc.querySelector(".art-upload strong");
+    if(label) label.textContent = picked ? picked.name : "上传您的参考图片";
+    if(status) status.textContent = picked ? "参考图片名称已写入当前创作 brief。图片本体仍保留在本地浏览器。" : "";
+    refreshCreativeText();
+  });
+  if(text) text.addEventListener("input", () => {
+    root.ART_STATE = Object.assign(stateFrom(root.ART_STATE), {customRequest: text.value.trim()});
+    refreshCreativeText();
+  });
+  if(submit) submit.addEventListener("click", () => {
+    root.ART_STATE = Object.assign(stateFrom(root.ART_STATE), {customRequest: text ? text.value.trim() : ""});
+    if(status) status.textContent = "已写入当前创作 brief 与出图提示词。";
+    refreshCreativeText();
+  });
+}
+
 function bind(){
   const doc = root.document;
   doc.querySelectorAll("[data-art-opt]").forEach(btn => {
@@ -474,6 +603,7 @@ function bind(){
     const el = doc.getElementById(id);
     if(el) el.addEventListener("change", saveGenSettings);
   });
+  bindCustomPanel();
   bindSnapScroll();
 }
 
